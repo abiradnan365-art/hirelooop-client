@@ -9,6 +9,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
+import Link from "next/link"
 
 const links = [
   { label: "Browse Jobs", href: "#" },
@@ -16,7 +17,7 @@ const links = [
   { label: "Pricing", href: "#" },
 ]
 
-function Logo() {
+export function Logo() {
   return (
     <a href="#" className="flex items-center gap-0.5 text-lg font-bold tracking-tight text-white">
       <span>hirel</span>
@@ -65,10 +66,15 @@ function MobileMenu() {
 
         <div className="flex gap-2 px-2">
           <SheetClose
-            render={<Button variant="outline" className="flex-1 border-white/15 bg-transparent text-white hover:bg-white/5" />}
-          >
-            Sign In
-          </SheetClose>
+            render={
+              <Link
+                href="/sign-in"
+                className="flex-1 rounded-md border border-white/15 bg-transparent px-4 py-2 text-center text-sm font-medium text-white transition-colors hover:bg-white/10"
+              >
+                Sign In
+              </Link>
+            }
+          />
           <SheetClose
             render={<Button className="flex-1 bg-[#6c5df9] text-white hover:bg-[#7d6efc]" />}
           >
@@ -102,9 +108,12 @@ export function Navbar() {
 
           <Separator orientation="vertical" className="mx-2 h-4 bg-white/15" />
 
-          <Button variant="ghost" className="text-xs text-white/80 hover:bg-white/5 hover:text-white">
+          <Link
+            href="/sign-in"
+            className="rounded-md px-4 py-2 text-xs text-white/80 transition-colors hover:bg-white/5 hover:text-white"
+          >
             Sign In
-          </Button>
+          </Link>
           <Button className="bg-[#6c5df9] text-white hover:bg-[#7d6efc]">Get Started</Button>
         </div>
 
