@@ -7,12 +7,19 @@ const db = client.db('hirelooop');
 
 export const auth = betterAuth({
 
-  
+
 
     emailAndPassword: {
         enabled: true,
     },
-
+    user: {
+        additionalFields: {
+            role: {
+                type: ['seeker', 'recruiter', 'admin'],
+                input: false
+            }
+        }
+    },
     socialProviders: {
         google: { // [!code highlight]
             clientId: process.env.GOOGLE_CLIENT_ID as string, // [!code highlight]

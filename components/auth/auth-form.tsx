@@ -20,11 +20,14 @@ export type SignUpData = {
 }
 
 type AuthFormProps =
-  | { mode: "sign-in" }
   | {
-      mode: "sign-up"
-      onSubmit: (data: SignUpData) => void | Promise<void>
-    }
+    mode: "sign-in"
+    onSubmit: (data: SignInData) => void | Promise<void>
+  }
+  | {
+    mode: "sign-up"
+    onSubmit: (data: SignUpData) => void | Promise<void>
+  }
 
 function GoogleIcon() {
   return (
@@ -73,7 +76,8 @@ export function AuthForm(props: AuthFormProps) {
     setForm((prev) => ({ ...prev, [field]: event.target.value }))
   }
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setError(null)
 
@@ -82,14 +86,22 @@ export function AuthForm(props: AuthFormProps) {
         setError("Password must be at least 8 characters.")
         return
       }
-      props.onSubmit({
-          name: form.name ?? "",
-          email: form.email,
-          password: form.password,
-        })
+
+      await props.onSubmit({
+        name: form.name ?? "",
+        email: form.email,
+        password: form.password,
+      })
+
       return
     }
+
+    await props.onSubmit({
+      email: form.email,
+      password: form.password,
+    })
   }
+
 
   return (
     <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0b0c11] p-6 shadow-[0_0_80px_rgba(99,102,241,0.12)] md:p-8">

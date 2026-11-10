@@ -1,27 +1,31 @@
 'use client'
+
 import { AuthForm, SignUpData } from "@/components/auth/auth-form"
-import { authClient } from "@/lib/auth-client";
-
-
-// export const metadata = {
-//   title: "Sign Up · HireLoop",
-// }
+import { authClient } from "@/lib/auth-client"
+import { useRouter } from "next/navigation"
 
 export default function SignUpPage() {
+  const router = useRouter()
 
-    const handleSignUp = async (data:SignUpData) => {
-        const {data: signUpResponse, error} = await authClient.signUp.email({
-            name: data.name,
-            email: data.email,
-            password: data.password,
-            callbackURL: "/"
-        })
-        console.log('sirnup response', signUpResponse, error); 
+  const handleSignUp = async (data: SignUpData) => {
+    const { data: signUpResponse, error } =
+      await authClient.signUp.email({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        callbackURL: "/",
+      })
+
+    if (error) {
+      console.error("Signup failed:", error)
+      return
     }
+
+    console.log("Signup successful:", signUpResponse)
+
+    router.replace("/")
+    router.refresh()
+  }
 
   return <AuthForm mode="sign-up" onSubmit={handleSignUp} />
 }
-    
-
-//   return <AuthForm mode="sign-up" onSubmit={handleSignUp} />
-// }
