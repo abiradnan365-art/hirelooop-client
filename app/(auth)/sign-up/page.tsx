@@ -1,6 +1,6 @@
 'use client'
 
-import { AuthForm, SignUpData } from "@/components/auth/auth-form"
+import { AuthForm, type SignUpData } from "@/components/auth/auth-form"
 import { authClient } from "@/lib/auth-client"
 import { useRouter } from "next/navigation"
 
@@ -13,12 +13,15 @@ export default function SignUpPage() {
         name: data.name,
         email: data.email,
         password: data.password,
+        // `role` is a better-auth additional field (see lib/auth.ts)
+        role: data.role,
         callbackURL: "/",
       })
 
     if (error) {
       console.error("Signup failed:", error)
-      return
+      // Let the form display the failure message.
+      throw new Error(error.message ?? "Signup failed")
     }
 
     console.log("Signup successful:", signUpResponse)

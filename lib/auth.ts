@@ -7,18 +7,19 @@ const db = client.db('hirelooop');
 
 export const auth = betterAuth({
 
-
-
-    emailAndPassword: {
-        enabled: true,
-    },
     user: {
         additionalFields: {
             role: {
-                type: ['seeker', 'recruiter', 'admin'],
-                input: false
-            }
-        }
+                type: "string",
+                allowedValues: ["seeker", "recruiter", "admin"],
+                defaultValue: "seeker",
+                input: true, // let clients set it during sign-up
+            },
+        },
+    },
+
+    emailAndPassword: {
+        enabled: true,
     },
     socialProviders: {
         google: { // [!code highlight]

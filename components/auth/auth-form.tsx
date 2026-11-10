@@ -2,13 +2,16 @@
 
 import Link from "next/link"
 import { useState } from "react"
+import { Building2, Loader, ShieldCheck, UserRound, type LucideIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 
-type SignInData = {
+export type Role = "seeker" | "recruiter" | "admin"
+
+export type SignInData = {
   email: string
   password: string
 }
@@ -17,17 +20,24 @@ export type SignUpData = {
   name: string
   email: string
   password: string
+  role: Role
 }
 
 type AuthFormProps =
   | {
-    mode: "sign-in"
-    onSubmit: (data: SignInData) => void | Promise<void>
-  }
+      mode: "sign-in"
+      onSubmit: (data: SignInData) => void | Promise<void>
+    }
   | {
-    mode: "sign-up"
-    onSubmit: (data: SignUpData) => void | Promise<void>
-  }
+      mode: "sign-up"
+      onSubmit: (data: SignUpData) => void | Promise<void>
+    }
+
+const roleOptions: { value: Role; label: string; icon: LucideIcon }[] = [
+  { value: "seeker", label: "Job Seeker", icon: UserRound },
+  { value: "recruiter", label: "Recruiter", icon: Building2 },
+  { value: "admin", label: "Admin", icon: ShieldCheck },
+]
 
 function GoogleIcon() {
   return (
@@ -52,8 +62,6 @@ function GoogleIcon() {
   )
 }
 
-// TODO: wire these up to better-auth (`authClient.signIn.email` / `authClient.signUp.email`).
-
 const inputClassName =
   "h-10 rounded-lg border-white/10 bg-white/[0.03] px-3 text-white focus-visible:border-[#6c5df9]/60 focus-visible:ring-[#6c5df9]/25 dark:bg-transparent placeholder:text-white/30"
 
@@ -62,13 +70,16 @@ const buttonClassName =
 
 export function AuthForm(props: AuthFormProps) {
   const isSignUp = props.mode === "sign-up"
-  // Shared field state; name is only used on sign-up.
-  const [form, setForm] = useState<SignInData & Partial<SignUpData>>({
+
+  // Shared field state; name/role are only used on sign-up.
+  const [form, setForm] = useState<{ role: Role } & SignInData & Partial<SignUpData>>({
+    role: "seeker",
     name: "",
     email: "",
     password: "",
   })
   const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
 
   const setField = (field: keyof SignInData | keyof SignUpData) => (
     event: React.ChangeEvent<HTMLInputElement>
@@ -76,9 +87,9 @@ export function AuthForm(props: AuthFormProps) {
     setForm((prev) => ({ ...prev, [field]: event.target.value }))
   }
 
-
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (loading) return
     setError(null)
 
     if (isSignUp) {
@@ -86,22 +97,41 @@ export function AuthForm(props: AuthFormProps) {
         setError("Password must be at least 8 characters.")
         return
       }
-
-      await props.onSubmit({
-        name: form.name ?? "",
-        email: form.email,
-        password: form.password,
-      })
-
+      // The page-level handler owns the API call (better-auth) and the redirect.
+      setLoading(true)
+      try {
+        await props.onSubmit({
+          name: form.name ?? "",
+          email: form.email,
+          password: form.password,
+          role: form.role,
+        })
+      } catch (err) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Something went wrong. Please try again."
+        )
+      } finally {
+        setLoading(false)
+      }
       return
     }
 
-    await props.onSubmit({
-      email: form.email,
-      password: form.password,
-    })
+    setLoading(true)
+    try {
+      await props.onSubmit({
+        email: form.email,
+        password: form.password,
+      })
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Something went wrong. Please try again."
+      )
+    } finally {
+      setLoading(false)
+    }
   }
-
 
   return (
     <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0b0c11] p-6 shadow-[0_0_80px_rgba(99,102,241,0.12)] md:p-8">
@@ -118,22 +148,54 @@ export function AuthForm(props: AuthFormProps) {
 
       <form onSubmit={handleSubmit} className="mt-7 flex flex-col gap-4" noValidate>
         {isSignUp && (
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="name" className="text-xs text-white/60">
-              Full Name
-            </Label>
-            <Input
-              id="name"
-              name="name"
-              type="text"
-              autoComplete="name"
-              placeholder="John Doe"
-              required
-              value={form.name ?? ""}
-              onChange={setField("name")}
-              className={inputClassName}
-            />
-          </div>
+          <>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="name" className="text-xs text-white/60">
+                Full Name
+              </Label>
+              <Input
+                id="name"
+                name="name"
+                type="text"
+                autoComplete="name"
+                placeholder="John Doe"
+                required
+                value={form.name ?? ""}
+                onChange={setField("name")}
+                className={inputClassName}
+              />
+            </div>
+
+            <fieldset className="flex flex-col gap-1.5">
+              <legend className="text-xs text-white/60">I am a</legend>
+              <div className="grid grid-cols-3 gap-2">
+                {roleOptions.map((option) => (
+                  <label key={option.value} className="cursor-pointer">
+                    <input
+                      type="radio"
+                      name="role"
+                      value={option.value}
+                      checked={form.role === option.value}
+                      onChange={() =>
+                        setForm((prev) => ({ ...prev, role: option.value }))
+                      }
+                      className="sr-only"
+                    />
+                    <span
+                      className={`flex flex-col items-center gap-1.5 rounded-lg border px-1 py-3 text-xs transition-colors ${
+                        form.role === option.value
+                          ? "border-[#6c5df9]/70 bg-[#6c5df9]/15 text-white"
+                          : "border-white/10 bg-white/[0.03] text-white/60 hover:bg-white/5"
+                      }`}
+                    >
+                      <option.icon className="size-4" />
+                      {option.label}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+          </>
         )}
 
         <div className="flex flex-col gap-1.5">
@@ -180,8 +242,13 @@ export function AuthForm(props: AuthFormProps) {
 
         {error && <p className="text-xs text-red-400">{error}</p>}
 
-        <Button type="submit" className={buttonClassName}>
-          {isSignUp ? "Create account" : "Sign In"}
+        <Button type="submit" disabled={loading} className={buttonClassName}>
+          {loading && <Loader className="animate-spin" />}
+          {isSignUp
+            ? loading
+              ? "Creating account..."
+              : "Create account"
+            : "Sign In"}
         </Button>
       </form>
 
@@ -194,6 +261,7 @@ export function AuthForm(props: AuthFormProps) {
       <Button
         type="button"
         variant="outline"
+        disabled={loading}
         className="h-10 w-full border-white/15 bg-transparent text-white hover:bg-white/5"
       >
         <GoogleIcon />

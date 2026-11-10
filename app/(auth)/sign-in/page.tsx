@@ -1,4 +1,3 @@
-
 'use client'
 
 import { AuthForm } from "@/components/auth/auth-form"
@@ -21,16 +20,12 @@ export default function SignInPage() {
 
     if (error) {
       console.error("Sign in failed:", error)
-      return
+      // Let the form display the failure message.
+      throw new Error(error.message ?? "Sign in failed")
     }
 
     console.log("Sign in successful:", signInData)
   }
 
-  return (
-    <AuthForm
-      mode="sign-in"
-      onSubmit={handleSignIn}
-    />
-  )
+  return <AuthForm mode="sign-in" onSubmit={handleSignIn} />
 }
