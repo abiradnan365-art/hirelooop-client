@@ -13,11 +13,7 @@ import {
 import Link from "next/link"
 import { useSession, signOut } from "@/lib/auth-client"
 
-const links = [
-  { label: "Browse Jobs", href: "#" },
-  { label: "Company", href: "#" },
-  { label: "Pricing", href: "#" },
-]
+
 
 export function Logo() {
   return (
@@ -31,7 +27,7 @@ export function Logo() {
   )
 }
 
-function MobileMenu() {
+function MobileMenu({ links }: { links: { label: string; href: string }[] }) {
   return (
     <Sheet>
       <SheetTrigger
@@ -89,8 +85,16 @@ function MobileMenu() {
 }
 
 export function Navbar() {
-  const {data: session} = useSession();
+  const { data: session } = useSession();
   console.log('session', session);
+
+  const links = [
+    { label: "Browse Jobs", href: "/jobs" },
+    { label: "Company", href: "/company" },
+    { label: "Pricing", href: "/pricing" },
+    { label: "Dashboard", href: `/dashboard/${session?.user?.role || 'seeker'}` },
+  ]
+
   const handleSignOut = async () => {
     await signOut();
   }
@@ -115,53 +119,53 @@ export function Navbar() {
 
           <Separator orientation="vertical" className="mx-2 h-4 bg-white/15" />
 
-        {session?.user ? 
-        <>
-        <span className="text-sm">Welcome, {session.user.name}</span>
-        <Button
-            variant="ghost"
-            size="icon-sm"
-            onClick={handleSignOut}
-            className="rounded-md px-4 py-2 text-xs text-white/80 transition-colors hover:bg-white/5 hover:text-white ml-4"
-          >
-            Sign Out
-          </Button>
-        </>
-      
-      :<>
-        <Link
-            href="/sign-in"
-            className="rounded-md px-4 py-2 text-xs text-white/80 transition-colors hover:bg-white/5 hover:text-white"
-          >
-            Sign In
-          </Link>
-            <Link
-            href="/sign-up"
-            className="rounded-md px-4 py-2 text-xs text-white/80 transition-colors hover:bg-white/5 hover:text-white"
-           
-          
-          >
-            Get Started
-          </Link>
-      </>
-      }
+          {session?.user ?
+            <>
+              <span className="text-sm">Welcome, {session.user.name}</span>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                onClick={handleSignOut}
+                className="rounded-md px-4 py-2 text-xs text-white/80 transition-colors hover:bg-white/5 hover:text-white ml-4"
+              >
+                Sign Out
+              </Button>
+            </>
+
+            : <>
+              <Link
+                href="/sign-in"
+                className="rounded-md px-4 py-2 text-xs text-white/80 transition-colors hover:bg-white/5 hover:text-white"
+              >
+                Sign In
+              </Link>
+              <Link
+                href="/sign-up"
+                className="rounded-md px-4 py-2 text-xs text-white/80 transition-colors hover:bg-white/5 hover:text-white"
+
+
+              >
+                Get Started
+              </Link>
+            </>
+          }
         </div>
 
         {/* mobile */}
         <div className="flex items-center gap-1 md:hidden">
-          <MobileMenu />
-        {session?.user ?
-      <span className="text-sm">Welcome, {session.user.name}</span>
-      :<>
-         <Link
-            href="/sign-up"
-           
-            className="rounded-md px-4 py-2 text-xs text-white/80 transition-colors hover:bg-white/5 hover:text-white"
-          >
-            Get Started
-          </Link>
-      </>
-      }
+          <MobileMenu links={links} />
+          {session?.user ?
+            <span className="text-sm">Welcome, {session.user.name}</span>
+            : <>
+              <Link
+                href="/sign-up"
+
+                className="rounded-md px-4 py-2 text-xs text-white/80 transition-colors hover:bg-white/5 hover:text-white"
+              >
+                Get Started
+              </Link>
+            </>
+          }
         </div>
       </nav>
     </header>

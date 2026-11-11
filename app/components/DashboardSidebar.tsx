@@ -25,7 +25,9 @@ import {
     Building2,
     Settings,
     type LucideIcon,
+    PlusCircle,
 } from "lucide-react"
+import Link from "next/link"
 
 type MenuItem = {
     name: string
@@ -40,6 +42,7 @@ const menuItemsByRole: Record<"seeker" | "recruiter" | "admin", MenuItem[]> = {
         { name: "Dashboard", url: "/dashboard/recruiter", icon: LayoutDashboard },
         { name: "My Company", url: "/dashboard/recruiter/company", icon: Building2 },
         { name: "Manage Jobs", url: "/dashboard/recruiter/jobs", icon: Briefcase },
+        { name: "Add Jobs", url: "/dashboard/recruiter/jobs/new", icon: PlusCircle },
         { name: "Applications", url: "/dashboard/recruiter/applications", icon: FileText },
         { name: "Settings", url: "/dashboard/recruiter/settings", icon: Settings },
     ],
@@ -76,7 +79,7 @@ export function DashboardSidebar() {
                     {
                         menuItemsByRole[role]?.map((item) => (
                             <SidebarMenuItem key={item.name}>
-                                <SidebarMenuButton render={<a href={item.url} />}>
+                                <SidebarMenuButton render={<Link href={item.url} />}>
                                     <item.icon />
                                     <span>{item.name}</span>
                                 </SidebarMenuButton>
