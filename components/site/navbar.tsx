@@ -1,3 +1,4 @@
+'use client'
 import { MenuIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -10,6 +11,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import Link from "next/link"
+import { useSession, signOut } from "@/lib/auth-client"
 
 const links = [
   { label: "Browse Jobs", href: "#" },
@@ -87,6 +89,11 @@ function MobileMenu() {
 }
 
 export function Navbar() {
+  const {data: session} = useSession();
+  console.log('session', session);
+  const handleSignOut = async () => {
+    await signOut();
+  }
   return (
     <header className="sticky top-3 z-50 px-3">
       <nav className="mx-auto flex h-14 max-w-5xl items-center justify-between rounded-2xl border border-white/5 bg-[#0b0c11]/90 px-4 backdrop-blur-md md:px-5">
@@ -108,24 +115,53 @@ export function Navbar() {
 
           <Separator orientation="vertical" className="mx-2 h-4 bg-white/15" />
 
-          <Link
+        {session?.user ? 
+        <>
+        <span className="text-sm">Welcome, {session.user.name}</span>
+        <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={handleSignOut}
+            className="rounded-md px-4 py-2 text-xs text-white/80 transition-colors hover:bg-white/5 hover:text-white ml-4"
+          >
+            Sign Out
+          </Button>
+        </>
+      
+      :<>
+        <Link
             href="/sign-in"
             className="rounded-md px-4 py-2 text-xs text-white/80 transition-colors hover:bg-white/5 hover:text-white"
           >
             Sign In
           </Link>
-          <Button className="bg-[#6c5df9] text-white hover:bg-[#7d6efc]">Get Started</Button>
+            <Link
+            href="/sign-up"
+            className="rounded-md px-4 py-2 text-xs text-white/80 transition-colors hover:bg-white/5 hover:text-white"
+           
+          
+          >
+            Get Started
+          </Link>
+      </>
+      }
         </div>
 
         {/* mobile */}
         <div className="flex items-center gap-1 md:hidden">
           <MobileMenu />
-          <Button
-            size="sm"
-            className="bg-[#6c5df9] text-white hover:bg-[#7d6efc] sm:h-8 sm:px-2.5"
+        {session?.user ?
+      <span className="text-sm">Welcome, {session.user.name}</span>
+      :<>
+         <Link
+            href="/sign-up"
+           
+            className="rounded-md px-4 py-2 text-xs text-white/80 transition-colors hover:bg-white/5 hover:text-white"
           >
             Get Started
-          </Button>
+          </Link>
+      </>
+      }
         </div>
       </nav>
     </header>

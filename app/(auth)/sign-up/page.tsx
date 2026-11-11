@@ -19,7 +19,7 @@ export default function SignUpPage() {
       })
 
     if (error) {
-      console.error("Signup failed:", error)
+      console.log("Signup failed:", error)
       // Let the form display the failure message.
       throw new Error(error.message ?? "Signup failed")
     }
