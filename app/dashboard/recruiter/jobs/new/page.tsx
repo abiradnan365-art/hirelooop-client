@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
+import { createJob } from "@/lib/actions/jobs"
 
 // Matches the Figma "Post a New Job" screen: Job Type chips + salary frequency options.
 const jobTypes = ["Full-time", "Part-time", "Contract", "Internship"] as const
@@ -28,7 +29,7 @@ const salaryFrequencies = ["per hour", "per day", "per week", "per month", "per 
 
 // One flat object; everything is a string (except the remote toggle) so it's
 // trivial to read, log, and later send to the API as-is.
-type NewJobData = {
+export type NewJobData = {
     title: string
     company: string
     category: string
@@ -68,12 +69,13 @@ export default function NewJobPage() {
         setForm((prev) => ({ ...prev, [field]: event.target.value }))
     }
 
-    function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
         // TODO: send `form` to the API (POST /api/jobs) and redirect to Manage Jobs.
         console.log("[recruiter] new job payload:", form)
 
-   
+        const result = await createJob(form)
+        console.log("[recruiter] new job result:", result)
 
     }
 
