@@ -10,6 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 import { createJob } from "@/lib/actions/jobs"
+import { toast } from "@/components/ui/toast"
+import { useRouter } from "next/navigation"
 
 // Matches the Figma "Post a New Job" screen: Job Type chips + salary frequency options.
 const jobTypes = ["Full-time", "Part-time", "Contract", "Internship"] as const
@@ -42,6 +44,8 @@ export type NewJobData = {
     salaryFrequency: string
     responsibilities: string
     requirements: string
+    status: "Active" | "Expired"
+    applicants: number
 }
 
 const initialData: NewJobData = {
@@ -57,9 +61,13 @@ const initialData: NewJobData = {
     salaryFrequency: "per hour",
     responsibilities: "",
     requirements: "",
+    status: "Active",
+    applicants: 0,
+
 }
 
 export default function NewJobPage() {
+    const router = useRouter()
     const [form, setForm] = useState<NewJobData>(initialData)
 
     // Works for every text/number/date field.
@@ -69,13 +77,20 @@ export default function NewJobPage() {
         setForm((prev) => ({ ...prev, [field]: event.target.value }))
     }
 
-   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
         // TODO: send `form` to the API (POST /api/jobs) and redirect to Manage Jobs.
         console.log("[recruiter] new job payload:", form)
 
         const result = await createJob(form)
-        console.log("[recruiter] new job result:", result)
+        if (result.insertedId) {
+            console.log("[recruiter] new job result:", result)
+            toast.add({
+                title: "Job Created",
+                description: "Job created successfully.",
+            })
+        }
+        router.push("/dashboard/recruiter/jobs")
 
     }
 
@@ -170,8 +185,8 @@ export default function NewJobPage() {
                                         aria-pressed={form.type === type}
                                         onClick={() => setForm((prev) => ({ ...prev, type }))}
                                         className={`rounded-lg border px-3 py-1.5 text-xs transition-colors ${form.type === type
-                                                ? "border-[#6c5df9] bg-[#6c5df9] text-white"
-                                                : "border-border text-muted-foreground hover:bg-muted"
+                                            ? "border-[#6c5df9] bg-[#6c5df9] text-white"
+                                            : "border-border text-muted-foreground hover:bg-muted"
                                             }`}
                                     >
                                         {type}

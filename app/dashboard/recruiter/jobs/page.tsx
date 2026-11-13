@@ -10,11 +10,14 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
+import { Delete, Trash2 } from "lucide-react"
 import { getJobs } from "@/lib/api/jobs"
+import { DeleteJobDialog } from "@/app/components/DeleteJobDialog"
 
 // Same shape as the data collected on the "Post a New Job" page (NewJobData),
 // plus the fields the table needs for display (status / applicants / postedAt).
-type JobRow = {
+export type JobRow = {
+    _id: string
     title: string
     category: string
     company: string
@@ -93,7 +96,7 @@ export default async function ManageJobsPage() {
                     </TableHeader>
                     <TableBody>
                         {jobs.map((job) => (
-                            <TableRow key={job.title}>
+                            <TableRow key={job._id}>
                                 <TableCell>
                                     <div className="font-medium">{job.title}</div>
                                     <div className="text-xs text-muted-foreground">{job.category}</div>
@@ -123,10 +126,14 @@ export default async function ManageJobsPage() {
                                     <div className="text-xs text-muted-foreground">{job.postedAt}</div>
                                 </TableCell>
                                 <TableCell className="text-right">
-                                    {/* TODO: wire up to the edit flow / API */}
-                                    <Button variant="outline" size="sm">
-                                        Update
-                                    </Button>
+                                    <div className="flex items-center justify-end gap-2">
+                                        {/* TODO: wire up to the edit flow / API */}
+                                        <Button variant="outline" size="sm">
+                                            Update
+                                        </Button>
+                                        {/* TODO: DELETE {BASE_URL}/jobs/:id once rows carry an id */}
+                                        <DeleteJobDialog job={job} />
+                                    </div>
                                 </TableCell>
                             </TableRow>
                         ))}
