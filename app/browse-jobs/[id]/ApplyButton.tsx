@@ -5,7 +5,8 @@ import { useSession } from "@/lib/auth-client"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { JobRow } from "@/lib/types/jobs"
-import { applyToAJob } from "@/lib/actions/applications"
+import { applyToAJob } from "@/lib/api/applications"
+import { type JobApplication } from "@/lib/types/applications"
 
 const ApplyButton = ({job}: {job: JobRow}) => {
     const { data: session } = useSession()
@@ -20,13 +21,17 @@ const ApplyButton = ({job}: {job: JobRow}) => {
         }
         else{
             // console.log("User is logged in. Ready to apply!1234")
-            const application = {
+            const application: JobApplication = {
                 jobId: job._id,
                 userId: user.id,
-                status: "applied",
                 email: user.email,
                 jobTitle: job.title,
-                companyName: job.company
+                companyName: job.company,
+                jobType: job.type,
+                remote: job.remote,
+                location: job.location,
+                status: "Applied",
+                appliedAt: new Date().toISOString(),
             }
             const result = await applyToAJob(application)
             if (result.insertedId) {

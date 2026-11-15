@@ -1,6 +1,5 @@
 import { type JobRow, type NewJobData } from "@/lib/types/jobs"
-
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"
+import { BASE_URL } from "@/lib/api/client"
 
 // Manage Jobs table
 export const getJobs = async (query = ''): Promise<JobRow[]> => {

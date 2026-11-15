@@ -1,5 +1,6 @@
 'use client'
 
+import { Suspense } from "react"
 import { AuthForm } from "@/components/auth/auth-form"
 import { authClient } from "@/lib/auth-client"
 import { useSearchParams } from "next/navigation"
@@ -9,8 +10,7 @@ type SignInData = {
   password: string
 }
 
-export default function SignInPage() {
-
+function SignInPageContent() {
   const searchParams = useSearchParams()
   const redirectTo = searchParams.get("redirect") || "/"
 
@@ -33,4 +33,13 @@ export default function SignInPage() {
   }
 
   return <AuthForm mode="sign-in" onSubmit={handleSignIn} />
+}
+
+// useSearchParams() requires a Suspense boundary during static prerendering.
+export default function SignInPage() {
+  return (
+    <Suspense>
+      <SignInPageContent />
+    </Suspense>
+  )
 }
