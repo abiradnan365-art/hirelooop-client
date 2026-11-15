@@ -65,8 +65,9 @@ function GoogleIcon() {
 const inputClassName =
   "h-10 rounded-lg border-white/10 bg-white/[0.03] px-3 text-white focus-visible:border-[#6c5df9]/60 focus-visible:ring-[#6c5df9]/25 dark:bg-transparent placeholder:text-white/30"
 
+// Submit button styling; the violet itself lives in the Button "accent" variant.
 const buttonClassName =
-  "h-10 w-full bg-[#6c5df9] text-white hover:bg-[#7d6efc]"
+  "h-10 w-full"
 
 export function AuthForm(props: AuthFormProps) {
   const isSignUp = props.mode === "sign-up"
@@ -242,7 +243,7 @@ export function AuthForm(props: AuthFormProps) {
 
         {error && <p className="text-xs text-red-400">{error}</p>}
 
-        <Button type="submit" disabled={loading} className={buttonClassName}>
+        <Button type="submit" disabled={loading} variant="accent" className={buttonClassName}>
           {loading && <Loader className="animate-spin" />}
           {isSignUp
             ? loading

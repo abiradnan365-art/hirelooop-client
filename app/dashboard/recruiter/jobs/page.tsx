@@ -10,31 +10,10 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { Delete, Trash2 } from "lucide-react"
 import { getJobs } from "@/lib/api/jobs"
+import { type JobRow } from "@/lib/types/jobs"
+import { PageHeader } from "@/app/components/PageHeader"
 import { DeleteJobDialog } from "@/app/components/DeleteJobDialog"
-
-// Same shape as the data collected on the "Post a New Job" page (NewJobData),
-// plus the fields the table needs for display (status / applicants / postedAt).
-export type JobRow = {
-    _id: string
-    title: string
-    category: string
-    company: string
-    remote: boolean
-    location: string
-    type: string
-    minSalary: string
-    maxSalary: string
-    salaryFrequency: string
-    status: "Active" | "Expired"
-    applicants: number
-    deadline: string
-    postedAt: string
-}
-
-// Dummy data — mirrors the rows in the Figma "Manage Job Posts" screen.
-
 
 // €25 / €40 + "per hour"  →  "€25 – €40 / hr"   (like the Figma)
 function formatCompensation(row: JobRow) {
@@ -51,32 +30,25 @@ const statusStyles: Record<JobRow["status"], string> = {
     Expired: "bg-red-500/10 text-red-600 dark:text-red-400",
 }
 
+const headClass = "text-[11px] tracking-wider uppercase"
+
 export default async function ManageJobsPage() {
     const jobs: JobRow[] = await getJobs()
     return (
         <div className="mx-auto max-w-6xl px-4 py-6 md:px-6">
-            <nav className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Link href="/dashboard/recruiter" className="hover:text-foreground">
-                    Manage Jobs
-                </Link>
-                <span aria-hidden>/</span>
-                <span className="text-foreground">Job Listings &amp; Postings</span>
-            </nav>
-
-            <div className="mt-4 flex flex-wrap items-start justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-semibold tracking-tight">Manage Job Posts</h1>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                        Review live listings, monitor applicants, and update job details across
-                        your organization.
-                    </p>
-                </div>
-                <Link href="/dashboard/recruiter/jobs/new">
-                    <Button className="bg-[#6c5df9] text-white hover:bg-[#7d6efc]">
-                        + New Job Post
-                    </Button>
-                </Link>
-            </div>
+            <PageHeader
+                breadcrumb={[
+                    { label: "Manage Jobs", href: "/dashboard/recruiter" },
+                    { label: "Job Listings & Postings" },
+                ]}
+                title="Manage Job Posts"
+                description="Review live listings, monitor applicants, and update job details across your organization."
+                action={
+                    <Link href="/dashboard/recruiter/jobs/new">
+                        <Button variant="accent">+ New Job Post</Button>
+                    </Link>
+                }
+            />
 
             {/* Table card; scrolls horizontally on very small screens.
           Less-critical columns collapse away on smaller breakpoints. */}
@@ -84,14 +56,14 @@ export default async function ManageJobsPage() {
                 <Table className="min-w-180">
                     <TableHeader>
                         <TableRow className="hover:bg-transparent">
-                            <TableHead className="text-[11px] tracking-wider uppercase">Job Title &amp; Dept</TableHead>
-                            <TableHead className="text-[11px] tracking-wider uppercase hidden lg:table-cell">Company &amp; Location</TableHead>
-                            <TableHead className="text-[11px] tracking-wider uppercase">Type</TableHead>
-                            <TableHead className="text-[11px] tracking-wider uppercase">Compensation</TableHead>
-                            <TableHead className="text-[11px] tracking-wider uppercase hidden md:table-cell">Applicants</TableHead>
-                            <TableHead className="text-[11px] tracking-wider uppercase">Status</TableHead>
-                            <TableHead className="text-[11px] tracking-wider uppercase hidden xl:table-cell">Deadline</TableHead>
-                            <TableHead className="text-right text-[11px] tracking-wider uppercase">Actions</TableHead>
+                            <TableHead className={headClass}>Job Title &amp; Dept</TableHead>
+                            <TableHead className={`${headClass} hidden lg:table-cell`}>Company &amp; Location</TableHead>
+                            <TableHead className={headClass}>Type</TableHead>
+                            <TableHead className={headClass}>Compensation</TableHead>
+                            <TableHead className={`${headClass} hidden md:table-cell`}>Applicants</TableHead>
+                            <TableHead className={headClass}>Status</TableHead>
+                            <TableHead className={`${headClass} hidden xl:table-cell`}>Deadline</TableHead>
+                            <TableHead className={`${headClass} text-right`}>Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -131,7 +103,6 @@ export default async function ManageJobsPage() {
                                         <Button variant="outline" size="sm">
                                             Update
                                         </Button>
-                                        {/* TODO: DELETE {BASE_URL}/jobs/:id once rows carry an id */}
                                         <DeleteJobDialog job={job} />
                                     </div>
                                 </TableCell>

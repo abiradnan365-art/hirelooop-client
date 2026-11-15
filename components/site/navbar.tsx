@@ -74,7 +74,7 @@ function MobileMenu({ links }: { links: { label: string; href: string }[] }) {
             }
           />
           <SheetClose
-            render={<Button className="flex-1 bg-[#6c5df9] text-white hover:bg-[#7d6efc]" />}
+            render={<Button variant="accent" className="flex-1" />}
           >
             Get Started
           </SheetClose>

@@ -14,8 +14,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
-import { JobRow } from "../dashboard/recruiter/jobs/page"
-import { deleteJob } from "@/lib/actions/jobs"
+import { type JobRow } from "@/lib/types/jobs"
+import { deleteJob } from "@/lib/api/jobs"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "@/components/ui/toast"
@@ -42,17 +42,17 @@ export function DeleteJobDialog({ job }: { job: JobRow }) {
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger
-        render={<Button variant="destructive"> <Trash2Icon /></Button>}
+        render={<Button variant="destructive" size="icon-sm" aria-label={`Delete ${job.title}`} title="Delete"> <Trash2Icon /></Button>}
       />
       <AlertDialogContent size="sm">
         <AlertDialogHeader>
           <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
-
+            <Trash2Icon />
           </AlertDialogMedia>
           <AlertDialogTitle>Delete Job?</AlertDialogTitle>
           <AlertDialogDescription>
-            This will permanently delete this job posting. View{" "}
-            <a href="#">Settings</a> delete any memories saved during this chat.
+            This will permanently delete the &ldquo;{job.title}&rdquo; posting. This
+            action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

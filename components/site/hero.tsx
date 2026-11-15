@@ -107,7 +107,8 @@ function SearchBar() {
       />
       <Button
         aria-label="Search"
-        className="size-10 shrink-0 rounded-xl bg-[#6c5df9] text-white hover:bg-[#7d6efc]"
+        variant="accent"
+        className="size-10 shrink-0 rounded-xl"
       >
         <Search className="size-4" />
       </Button>
