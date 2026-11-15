@@ -1,5 +1,7 @@
 import { getJobs } from '@/lib/api/jobs';
 import { FilterSidebar, SearchBar, SortSelect } from './filters';
+import { redirect } from 'next/navigation';
+import JobCard from '../components/JobCard';
 
 const BrowseJobsPage = async ({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) => {
 
@@ -9,7 +11,7 @@ const BrowseJobsPage = async ({ searchParams }: { searchParams: Promise<{ [key: 
 
     console.log('searchParams:', query);
     const jobs = await getJobs(query);
-
+    
 
     return (
         <div className="dark min-h-svh bg-[#04050a] text-foreground">
@@ -30,14 +32,7 @@ const BrowseJobsPage = async ({ searchParams }: { searchParams: Promise<{ [key: 
                         </div>
 
                         <div className="mt-4 space-y-4">
-                            {jobs.map((job) => (
-                                <div
-                                    key={job._id}
-                                    className="card bg-[#16181d] text-neutral-content border border-neutral/20 shadow-xl p-5 rounded-xl hover:border-neutral-content/30 transition-all"
-                                >
-                                    <h2 className="text-lg font-semibold text-white tracking-wide">{job.title}</h2>
-                                </div>
-                            ))}
+                            {jobs.map((job) => <JobCard key={job._id} job={job} />)}
                         </div>
                     </main>
                 </div>

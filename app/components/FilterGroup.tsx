@@ -22,8 +22,17 @@ type FilterGroupProps = {
 
 // Titled option group used in filter sidebars (Figma: "Job Type", "Category", …).
 export function FilterGroup({ title, options, mode = "multiple", onToggle }: FilterGroupProps) {
+
+
+
     // Single mode only: keeps the picked option local until the consumer wires up.
     const [selected, setSelected] = useState<string | null>(null)
+
+    const handleCheckboxChange = (value: string, checked: boolean) => {
+        if (checked) {
+            console.log(value)
+        }
+    }
 
     const pick = (value: string) => {
         const next = selected === value ? null : value
@@ -49,12 +58,12 @@ export function FilterGroup({ title, options, mode = "multiple", onToggle }: Fil
                             type="button"
                             aria-pressed={selected === option.value}
                             onClick={() => pick(option.value)}
+
                             className="flex items-center gap-2 text-left text-sm"
                         >
                             <span
-                                className={`flex size-4 shrink-0 items-center justify-center rounded-full border transition-colors ${
-                                    selected === option.value ? "border-[#6c5df9]" : "border-input"
-                                }`}
+                                className={`flex size-4 shrink-0 items-center justify-center rounded-full border transition-colors ${selected === option.value ? "border-[#6c5df9]" : "border-input"
+                                    }`}
                             >
                                 {selected === option.value && (
                                     <span className="size-2 rounded-full bg-[#6c5df9]" />
@@ -70,7 +79,7 @@ export function FilterGroup({ title, options, mode = "multiple", onToggle }: Fil
                         <div key={option.value} className="flex items-center gap-2 text-sm">
                             <Checkbox
                                 onCheckedChange={(checked) =>
-                                    onToggle?.(option.value, checked === true)
+                                    handleCheckboxChange(option.value, checked === true)
                                 }
                                 className="data-checked:border-[#6c5df9] data-checked:bg-[#6c5df9]"
                             />

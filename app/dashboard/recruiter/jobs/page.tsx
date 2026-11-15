@@ -12,18 +12,9 @@ import {
 } from "@/components/ui/table"
 import { getJobs } from "@/lib/api/jobs"
 import { type JobRow } from "@/lib/types/jobs"
+import { formatDate, formatCompensation } from "@/lib/utils/jobs"
 import { PageHeader } from "@/app/components/PageHeader"
 import { DeleteJobDialog } from "@/app/components/DeleteJobDialog"
-
-// €25 / €40 + "per hour"  →  "€25 – €40 / hr"   (like the Figma)
-function formatCompensation(row: JobRow) {
-    const money = (value: string) => {
-        const amount = Number(value)
-        return amount >= 1000 ? `€${amount / 1000}k` : `€${value}`
-    }
-    const unit = row.salaryFrequency.replace("per ", "")
-    return `${money(row.minSalary)} – ${money(row.maxSalary)} / ${unit}`
-}
 
 const statusStyles: Record<JobRow["status"], string> = {
     Active: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
@@ -88,13 +79,7 @@ export default async function ManageJobsPage() {
                                     </Badge>
                                 </TableCell>
                                 <TableCell className="hidden xl:table-cell whitespace-nowrap">
-                                    <div>
-                                        {new Date(job.deadline).toLocaleDateString("en-US", {
-                                            month: "short",
-                                            day: "2-digit",
-                                            year: "numeric",
-                                        })}
-                                    </div>
+                                    <div>{formatDate(job.deadline)}</div>
                                     <div className="text-xs text-muted-foreground">{job.postedAt}</div>
                                 </TableCell>
                                 <TableCell className="text-right">
