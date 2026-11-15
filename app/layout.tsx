@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils";
 import { Toast, ToastProvider } from "@base-ui/react";
 import { Toaster } from "@/components/ui/toast";
+import { Navbar } from "@/components/site/navbar";
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'})
 
@@ -25,7 +26,13 @@ export default function RootLayout({
       className={cn("antialiased", fontMono.variable, "font-sans", geist.variable)}
     >
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          
+          <Navbar />
+          {children}
+
+        </ThemeProvider>
+       
             <Toaster />
       </body>
     </html>

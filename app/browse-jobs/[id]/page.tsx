@@ -1,11 +1,14 @@
+
 import Link from "next/link"
-import { notFound } from "next/navigation"
+
 import { ArrowLeft, Banknote, Bookmark, Briefcase, CalendarDays, MapPin, Users } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { getJobs } from "@/lib/api/jobs"
+import { notFound } from "next/navigation"
 import { formatDate, formatCompensation } from "@/lib/utils/jobs"
+import { getJobById} from "@/lib/api/jobs"
+import ApplyButton from "./ApplyButton"
 
 // Split a multi-line form textarea into clean list items
 // (strips bullet markers the recruiter may have typed).
@@ -17,6 +20,8 @@ const toLines = (text: string) =>
 
 // Small labelled tile used in the bento info grid.
 function InfoTile({ icon: Icon, label, value }: { icon: typeof Banknote; label: string; value: string }) {
+
+  
     return (
         <div className="flex items-center gap-3 rounded-xl border bg-card p-4">
             <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-[#6c5df9]/10 text-[#6c5df9]">
@@ -32,6 +37,7 @@ function InfoTile({ icon: Icon, label, value }: { icon: typeof Banknote; label: 
 
 // Violet-dot bullet list (per the Figma list items).
 function BulletList({ items }: { items: string[] }) {
+
     return (
         <ul className="mt-3 flex list-disc flex-col gap-2 pl-5 text-sm text-muted-foreground marker:text-[#6c5df9]">
             {items.map((item) => (
@@ -42,15 +48,16 @@ function BulletList({ items }: { items: string[] }) {
 }
 
 const JobDetailsPage = async ({ params }: { params: Promise<{ id: string }> }) => {
+    
     const { id } = await params;
-
-    const jobs = await getJobs();
-    const job = jobs.find((job) => job._id === id);
+    
+    const job = await getJobById(id);
 
     if (!job) notFound();
 
     const responsibilities = toLines(job.responsibilities)
     const requirements = toLines(job.requirements)
+   
 
     return (
         <div className="dark min-h-svh bg-[#04050a] text-foreground">
@@ -78,7 +85,7 @@ const JobDetailsPage = async ({ params }: { params: Promise<{ id: string }> }) =
                             <Bookmark />
                         </Button>
                         {/* TODO: wire up to the apply flow */}
-                        <Button variant="accent">Apply Now</Button>
+                        <ApplyButton job={job} />
                     </div>
                 </div>
 

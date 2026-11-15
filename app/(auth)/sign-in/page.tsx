@@ -2,6 +2,7 @@
 
 import { AuthForm } from "@/components/auth/auth-form"
 import { authClient } from "@/lib/auth-client"
+import { useSearchParams } from "next/navigation"
 
 type SignInData = {
   email: string
@@ -9,12 +10,16 @@ type SignInData = {
 }
 
 export default function SignInPage() {
+
+  const searchParams = useSearchParams()
+  const redirectTo = searchParams.get("redirect") || "/"
+
   const handleSignIn = async (data: SignInData) => {
     const { data: signInData, error } =
       await authClient.signIn.email({
         email: data.email,
         password: data.password,
-        callbackURL: "/",
+        callbackURL: redirectTo,
         rememberMe: true,
       })
 

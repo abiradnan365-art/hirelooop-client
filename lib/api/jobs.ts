@@ -8,6 +8,11 @@ export const getJobs = async (query = ''): Promise<JobRow[]> => {
     return res.json()
 }
 
+export const getJobById = async (jobId: string): Promise<JobRow | null> => {
+    const res = await fetch(`${BASE_URL}/jobs/${jobId}`)
+    return res.json()
+}
+
 // Post a New Job form
 export const createJob = async (data: NewJobData) => {
     const res = await fetch(`${BASE_URL}/jobs`, {
