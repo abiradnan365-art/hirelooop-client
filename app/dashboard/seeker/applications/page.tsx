@@ -13,91 +13,94 @@ import { type ApplicationStatus, type JobApplication } from "@/lib/types/applica
 import { formatTimeAgo } from "@/lib/utils/time"
 import { PageHeader } from "@/app/components/PageHeader"
 import { ViewToggle } from "./view-toggle"
+import { getApplications } from "@/lib/api/applications"
+import { auth } from "@/lib/auth"
+import { headers } from "next/headers"
 
 // Dummy data — typed exactly like the rows the API will return.
 // The apply flow (ApplyButton) saves rows with this same shape.
 const hoursAgo = (hours: number) => new Date(Date.now() - hours * 60 * 60 * 1000).toISOString()
 
-const applications: JobApplication[] = [
-    {
-        _id: "1",
-        jobId: "101",
-        userId: "u1",
-        email: "seeker@example.com",
-        jobTitle: "Senior Frontend Engineer",
-        companyName: "Stark Industries",
-        jobType: "Full-time",
-        remote: true,
-        location: "New York, USA",
-        status: "Applied",
-        appliedAt: hoursAgo(2),
-    },
-    {
-        _id: "2",
-        jobId: "102",
-        userId: "u1",
-        email: "seeker@example.com",
-        jobTitle: "Product Designer",
-        companyName: "Cyberdyne Systems",
-        jobType: "Contract",
-        remote: false,
-        location: "London, UK",
-        status: "Under Review",
-        appliedAt: hoursAgo(24),
-    },
-    {
-        _id: "3",
-        jobId: "103",
-        userId: "u1",
-        email: "seeker@example.com",
-        jobTitle: "Lead Data Scientist",
-        companyName: "Wayne Enterprises",
-        jobType: "Full-time",
-        remote: false,
-        location: "Gotham, USA",
-        status: "Shortlisted",
-        appliedAt: hoursAgo(24 * 4),
-    },
-    {
-        _id: "4",
-        jobId: "104",
-        userId: "u1",
-        email: "seeker@example.com",
-        jobTitle: "Cloud Architect",
-        companyName: "Oscorp Tech",
-        jobType: "Full-time",
-        remote: true,
-        location: "Remote (EU/US)",
-        status: "Rejected",
-        appliedAt: hoursAgo(24 * 7),
-    },
-    {
-        _id: "5",
-        jobId: "105",
-        userId: "u1",
-        email: "seeker@example.com",
-        jobTitle: "AI Research Engineer",
-        companyName: "Hooli Corp",
-        jobType: "Full-time",
-        remote: false,
-        location: "Berlin, Germany",
-        status: "Offered",
-        appliedAt: hoursAgo(24 * 14),
-    },
-    {
-        _id: "6",
-        jobId: "106",
-        userId: "u1",
-        email: "seeker@example.com",
-        jobTitle: "DevOps Engineer",
-        companyName: "Umbrella Corp",
-        jobType: "Part-time",
-        remote: true,
-        location: "Remote (EU)",
-        status: "Applied",
-        appliedAt: hoursAgo(5),
-    },
-]
+// const applications: JobApplication[] = [
+//     {
+//         _id: "1",
+//         jobId: "101",
+//         userId: "u1",
+//         email: "seeker@example.com",
+//         jobTitle: "Senior Frontend Engineer",
+//         companyName: "Stark Industries",
+//         jobType: "Full-time",
+//         remote: true,
+//         location: "New York, USA",
+//         status: "Applied",
+//         appliedAt: hoursAgo(2),
+//     },
+//     {
+//         _id: "2",
+//         jobId: "102",
+//         userId: "u1",
+//         email: "seeker@example.com",
+//         jobTitle: "Product Designer",
+//         companyName: "Cyberdyne Systems",
+//         jobType: "Contract",
+//         remote: false,
+//         location: "London, UK",
+//         status: "Under Review",
+//         appliedAt: hoursAgo(24),
+//     },
+//     {
+//         _id: "3",
+//         jobId: "103",
+//         userId: "u1",
+//         email: "seeker@example.com",
+//         jobTitle: "Lead Data Scientist",
+//         companyName: "Wayne Enterprises",
+//         jobType: "Full-time",
+//         remote: false,
+//         location: "Gotham, USA",
+//         status: "Shortlisted",
+//         appliedAt: hoursAgo(24 * 4),
+//     },
+//     {
+//         _id: "4",
+//         jobId: "104",
+//         userId: "u1",
+//         email: "seeker@example.com",
+//         jobTitle: "Cloud Architect",
+//         companyName: "Oscorp Tech",
+//         jobType: "Full-time",
+//         remote: true,
+//         location: "Remote (EU/US)",
+//         status: "Rejected",
+//         appliedAt: hoursAgo(24 * 7),
+//     },
+//     {
+//         _id: "5",
+//         jobId: "105",
+//         userId: "u1",
+//         email: "seeker@example.com",
+//         jobTitle: "AI Research Engineer",
+//         companyName: "Hooli Corp",
+//         jobType: "Full-time",
+//         remote: false,
+//         location: "Berlin, Germany",
+//         status: "Offered",
+//         appliedAt: hoursAgo(24 * 14),
+//     },
+//     {
+//         _id: "6",
+//         jobId: "106",
+//         userId: "u1",
+//         email: "seeker@example.com",
+//         jobTitle: "DevOps Engineer",
+//         companyName: "Umbrella Corp",
+//         jobType: "Part-time",
+//         remote: true,
+//         location: "Remote (EU)",
+//         status: "Applied",
+//         appliedAt: hoursAgo(5),
+//     },
+// ]
 
 const statusStyles: Record<ApplicationStatus, string> = {
     Applied: "bg-[#6c5df9]/10 text-[#6c5df9]",
@@ -109,7 +112,14 @@ const statusStyles: Record<ApplicationStatus, string> = {
 
 const headClass = "text-[11px] tracking-wider uppercase"
 
-export default function MyApplicationsPage() {
+export default async function MyApplicationsPage() {
+
+      const session = await auth.api.getSession({
+        headers: await headers()
+    })
+
+    const applications = await getApplications(`applicantId=${session?.user.id}`) // Fetch applications from the API
+
     // Stats derived from the list (Figma: Stats Overview - Bento Layout).
     // "Interviews" counts applications that reached the interview stage
     // (Shortlisted or Offered) until interviews become their own entity.

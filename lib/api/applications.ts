@@ -17,7 +17,15 @@ export const applyToAJob = async (data: JobApplication) => {
 }
 
 // My Applications page (load later)
-export const getApplications = async (): Promise<JobApplication[]> => {
-    const res = await fetch(`${BASE_URL}/applications`)
+export const getApplications = async (query = ''): Promise<JobApplication[]> => {
+    const res = await fetch(`${BASE_URL}/applications?${query}`)
     return res.json()
 }
+
+export const getApplicationsCount = async (query = ''): Promise<{ count: number }> => {
+    const res = await fetch(`${BASE_URL}/applications/count?${query}`)
+    return res.json()
+}
+
+
+
