@@ -93,7 +93,7 @@ export default async function JobApplicationsPage({
                                             /applications/:id with the new status
                                             (functions can't be passed from this
                                             server component into the select). */}
-                                        <ApplicationStatusSelect value={application.status} />
+                                        <ApplicationStatusSelect  applicationId={application._id} value={application.status} />
                                     </TableCell>
                                 </TableRow>
                             ))}
