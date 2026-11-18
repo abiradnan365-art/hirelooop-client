@@ -15,6 +15,7 @@ import { type JobRow } from "@/lib/types/jobs"
 import { formatDate, formatCompensation } from "@/lib/utils/jobs"
 import { PageHeader } from "@/app/components/PageHeader"
 import { DeleteJobDialog } from "@/app/components/DeleteJobDialog"
+import { getSession } from "@/lib/core/server"
 
 const statusStyles: Record<JobRow["status"], string> = {
     Active: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
@@ -24,7 +25,9 @@ const statusStyles: Record<JobRow["status"], string> = {
 const headClass = "text-[11px] tracking-wider uppercase"
 
 export default async function ManageJobsPage() {
-    const jobs: JobRow[] = await getJobs()
+    const session = await getSession()
+    const jobs: JobRow[] = await getJobs(`recruiterId=${session?.user?.id}`)
+
     return (
         <div className="mx-auto max-w-6xl px-4 py-6 md:px-6">
             <PageHeader
@@ -84,6 +87,11 @@ export default async function ManageJobsPage() {
                                 </TableCell>
                                 <TableCell className="text-right">
                                     <div className="flex items-center justify-end gap-2">
+                                        <Link href={`/dashboard/recruiter/jobs/${job._id}/applications`}>
+                                            <Button variant="outline" size="sm">
+                                                View Applications
+                                            </Button>
+                                        </Link>
                                         {/* TODO: wire up to the edit flow / API */}
                                         <Button variant="outline" size="sm">
                                             Update

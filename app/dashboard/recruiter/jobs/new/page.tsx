@@ -15,10 +15,12 @@ import { toast } from "@/components/ui/toast"
 import { FormField } from "@/app/components/FormField"
 import { FormSection } from "@/app/components/FormSection"
 import { PageHeader } from "@/app/components/PageHeader"
+import { useSession } from "@/lib/auth-client"
 
 const initialData: NewJobData = {
     title: "",
     company: "",
+    recruiterId: "",
     category: "",
     type: "Full-time",
     remote: false,
@@ -35,6 +37,7 @@ const initialData: NewJobData = {
 }
 
 export default function NewJobPage() {
+    const { data: session } = useSession()
     const router = useRouter()
     const [form, setForm] = useState<NewJobData>(initialData)
 
@@ -49,8 +52,14 @@ export default function NewJobPage() {
         event.preventDefault()
         // TODO: send `form` to the API (POST /api/jobs) and redirect to Manage Jobs.
         console.log("[recruiter] new job payload:", form)
+        const jobData = {
+            ...form,
+            recruiterId: session?.user?.id || "",
+        }
 
-        const result = await createJob(form)
+        const result = await createJob(jobData)
+
+        
         if (result.insertedId) {
             console.log("[recruiter] new job result:", result)
             toast.add({

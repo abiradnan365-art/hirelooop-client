@@ -27,5 +27,12 @@ export const getApplicationsCount = async (query = ''): Promise<{ count: number 
     return res.json()
 }
 
+// All applications for one job (recruiter view).
+// Filters in code so this works even if the backend ignores the query param.
+export const getApplicationsByJob = async (jobId: string): Promise<JobApplication[]> => {
+    const applications = await getApplications()
+    return applications.filter((a) => a.jobId === jobId)
+}
+
 
 

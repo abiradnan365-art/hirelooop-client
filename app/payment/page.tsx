@@ -1,13 +1,22 @@
 import { Check, CreditCard, Lock } from "lucide-react"
 
 import { PLANS } from "@/lib/constants/plans"
-import { PayButton } from "./pay-button"
+// import { PayButton } from "./pay-button"
+import { Button } from "@/components/ui/button";
 
-const PaymentPage = async ({
-    searchParams,
-}: {
-    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+const PaymentPage = async ({ searchParams, }: {
+    searchParams: Promise<{ canceled?: string; plan?: string }>
 }) => {
+
+    const { canceled } = await searchParams
+
+    if (canceled) {
+        console.log(
+            'Order canceled -- continue to shop around and check out when you\'re ready.'
+        )
+    }
+
+
     const search = await searchParams
     const planId = typeof search.plan === "string" ? search.plan : "pro"
     const plan = PLANS.find((p) => p.id === planId) ?? PLANS[1]
@@ -64,7 +73,26 @@ const PaymentPage = async ({
                         </div>
 
                         <div className="mt-6">
-                            <PayButton amount={plan.price} />
+
+                            <form action="/api/checkout_sessions" method="POST">
+                                <section>
+                                    {/* <button type="submit">
+                                       
+                                    </button> */}
+                                    <Button
+                                        type="submit" role="link"
+                                        variant="accent"
+                                        className="h-11 w-full"
+                                        // onClick={() => {
+                                        //     // TODO: POST the selected plan to an API route that creates a
+                                        //     // Stripe Checkout Session, then window.location.assign(session.url).
+                                        // }}
+                                    >
+                                       Checkout ${plan.price.toFixed(2)}
+                                    </Button>
+
+                                </section>
+                            </form>
                         </div>
 
                         <p className="mt-4 flex items-start gap-2 text-xs text-muted-foreground">

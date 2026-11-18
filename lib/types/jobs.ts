@@ -5,6 +5,7 @@
 export type NewJobData = {
     title: string
     company: string
+    recruiterId: string
     category: string
     type: string
     remote: boolean

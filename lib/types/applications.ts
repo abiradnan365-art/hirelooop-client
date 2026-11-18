@@ -20,6 +20,7 @@ export type JobApplication = {
     userId: string
 
     // Applicant info (from the signed-in user at apply time)
+    applicantName?: string
     email: string
     resumeUrl?: string
     coverLetter?: string

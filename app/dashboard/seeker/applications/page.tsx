@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
     Table,
@@ -9,9 +8,10 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { ChevronLeft, ChevronRight, Download } from "lucide-react"
-import { type ApplicationStatus, type JobApplication } from "@/lib/types/applications"
+import { type JobApplication } from "@/lib/types/applications"
 import { formatTimeAgo } from "@/lib/utils/time"
 import { PageHeader } from "@/app/components/PageHeader"
+import { ApplicationStatusBadge } from "@/app/components/ApplicationStatusBadge"
 import { ViewToggle } from "./view-toggle"
 import { getApplications } from "@/lib/api/applications"
 import { auth } from "@/lib/auth"
@@ -102,14 +102,6 @@ const hoursAgo = (hours: number) => new Date(Date.now() - hours * 60 * 60 * 1000
 //     },
 // ]
 
-const statusStyles: Record<ApplicationStatus, string> = {
-    Applied: "bg-[#6c5df9]/10 text-[#6c5df9]",
-    "Under Review": "bg-amber-500/10 text-amber-600 dark:text-amber-400",
-    Shortlisted: "bg-sky-500/10 text-sky-600 dark:text-sky-400",
-    Rejected: "bg-red-500/10 text-red-600 dark:text-red-400",
-    Offered: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-}
-
 const headClass = "text-[11px] tracking-wider uppercase"
 
 export default async function MyApplicationsPage() {
@@ -194,12 +186,7 @@ export default async function MyApplicationsPage() {
                                     {formatTimeAgo(application.appliedAt)}
                                 </TableCell>
                                 <TableCell>
-                                    <Badge
-                                        variant="outline"
-                                        className={`border-transparent ${statusStyles[application.status]}`}
-                                    >
-                                        {application.status}
-                                    </Badge>
+                                    <ApplicationStatusBadge status={application.status} />
                                 </TableCell>
                                 <TableCell className="text-right">
                                     {/* TODO: application details page */}
